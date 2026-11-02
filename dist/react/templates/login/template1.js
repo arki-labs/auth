@@ -1,0 +1,7 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { Link } from '@tanstack/react-router';
+import { ArrowLeftIcon } from '@arki/icons/phosphor';
+export function LoginTemplate1({ slots, }) {
+    return (_jsxs("div", { className: "mx-auto flex h-screen w-full flex-col justify-center space-y-6 sm:w-[350px]", children: [_jsxs(Link, { to: "/", className: "text-muted-foreground flex cursor-pointer items-center space-x-2 text-sm", children: [_jsx(ArrowLeftIcon, {}), " Back"] }), _jsxs("div", { className: "flex flex-col space-y-2 text-center", children: [_jsx("h1", { className: "text-2xl font-semibold tracking-tight", children: "Sign In" }), _jsx("p", { className: "text-muted-foreground text-sm", children: "Enter your email below to get access to your account." })] }), slots.form, _jsxs("p", { className: "text-muted-foreground px-8 text-center text-sm", children: ["By clicking continue, you agree to our", ' ', _jsx(Link, { to: "/legal/terms", className: "hover:text-primary underline underline-offset-4", children: "Terms of Service" }), ' ', "and", ' ', _jsx(Link, { to: "/legal/privacy", className: "hover:text-primary underline underline-offset-4", children: "Privacy Policy" }), "."] })] }));
+}
+//# sourceMappingURL=template1.js.map

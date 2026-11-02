@@ -1,0 +1,238 @@
+{
+  "name": "@arki/auth",
+  "version": "0.4.0",
+  "description": "Sign-in for Arki apps: one definition, one engine on Postgres or SQLite, and the principal, guards and client types inferred from your own tables.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arki-labs/arki.git"
+  },
+  "homepage": "https://arki.dev",
+  "bugs": {
+    "url": "https://github.com/arki-labs/arki/issues"
+  },
+  "keywords": [
+    "arki",
+    "typescript"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./ids": {
+      "types": "./dist/ids.d.ts",
+      "import": "./dist/ids.js",
+      "default": "./dist/ids.js"
+    },
+    "./zod": {
+      "types": "./dist/zod.d.ts",
+      "import": "./dist/zod.js",
+      "default": "./dist/zod.js"
+    },
+    "./password": {
+      "types": "./dist/password.d.ts",
+      "import": "./dist/password.js",
+      "default": "./dist/password.js"
+    },
+    "./workspaces": {
+      "types": "./dist/workspaces.d.ts",
+      "import": "./dist/workspaces.js",
+      "default": "./dist/workspaces.js"
+    },
+    "./pg": {
+      "types": "./dist/pg/index.d.ts",
+      "import": "./dist/pg/index.js",
+      "default": "./dist/pg/index.js"
+    },
+    "./pg/workspaces": {
+      "types": "./dist/pg/workspaces/index.d.ts",
+      "import": "./dist/pg/workspaces/index.js",
+      "default": "./dist/pg/workspaces/index.js"
+    },
+    "./sqlite": {
+      "types": "./dist/sqlite/index.d.ts",
+      "import": "./dist/sqlite/index.js",
+      "default": "./dist/sqlite/index.js"
+    },
+    "./sqlite/workspaces": {
+      "types": "./dist/sqlite/workspaces/index.d.ts",
+      "import": "./dist/sqlite/workspaces/index.js",
+      "default": "./dist/sqlite/workspaces/index.js"
+    },
+    "./dot": {
+      "types": "./dist/dot.d.ts",
+      "import": "./dist/dot.js",
+      "default": "./dist/dot.js"
+    },
+    "./orpc": {
+      "types": "./dist/orpc.d.ts",
+      "import": "./dist/orpc.js",
+      "default": "./dist/orpc.js"
+    },
+    "./http": {
+      "types": "./dist/http.d.ts",
+      "import": "./dist/http.js",
+      "default": "./dist/http.js"
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "import": "./dist/react/index.js",
+      "default": "./dist/react/index.js"
+    },
+    "./react/templates": {
+      "types": "./dist/react/templates/index.d.ts",
+      "import": "./dist/react/templates/index.js",
+      "default": "./dist/react/templates/index.js"
+    },
+    "./tanstack-start": {
+      "types": "./dist/tanstack-start/index.d.ts",
+      "import": "./dist/tanstack-start/index.js",
+      "default": "./dist/tanstack-start/index.js"
+    },
+    "./testing": {
+      "types": "./dist/testing/index.d.ts",
+      "import": "./dist/testing/index.js",
+      "default": "./dist/testing/index.js"
+    },
+    "./testing/tanstack-start": {
+      "types": "./dist/testing/tanstack-start.d.ts",
+      "import": "./dist/testing/tanstack-start.js",
+      "default": "./dist/testing/tanstack-start.js"
+    },
+    "./testing/playwright": {
+      "types": "./dist/testing/playwright.d.ts",
+      "import": "./dist/testing/playwright.js",
+      "default": "./dist/testing/playwright.js"
+    },
+    "./testing/production-boot": {
+      "types": "./dist/testing/production-boot.d.ts",
+      "import": "./dist/testing/production-boot.js",
+      "default": "./dist/testing/production-boot.js"
+    },
+    "./env": {
+      "types": "./dist/env.d.ts",
+      "import": "./dist/env.js",
+      "default": "./dist/env.js"
+    },
+    "./tweaks-column": {
+      "types": "./dist/tweaks-column.d.ts",
+      "import": "./dist/tweaks-column.js",
+      "default": "./dist/tweaks-column.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**",
+    "src/**",
+    "!src/**/*.test.*",
+    "!src/**/*.spec.*",
+    "!src/**/*.test-d.ts",
+    "!src/**/__fixtures__/**",
+    "docs/**",
+    "!docs/examples/*.test.ts",
+    "!docs/examples/tsconfig.json",
+    "!docs/USER_VS_ACCOUNT.md",
+    "llms.txt",
+    "README.md",
+    "LICENSE",
+    "package.json"
+  ],
+  "dependencies": {
+    "@arki/contracts": "0.4.1",
+    "@arki/db": "0.5.1",
+    "@arki/env": "0.2.0",
+    "@arki/failure": "0.3.0",
+    "@arki/kv": "0.5.0",
+    "@arki/log": "0.4.0",
+    "@arki/mail": "0.5.0",
+    "@arki/schema": "0.3.0",
+    "@better-auth/expo": "1.7.10",
+    "@daveyplate/better-auth-tanstack": "^1.3.6",
+    "@daveyplate/better-auth-ui": "^3.4.0",
+    "@noble/hashes": "^2.2.0",
+    "@opentelemetry/api": "^1.9.1",
+    "better-auth": "1.7.10",
+    "drizzle-orm": "1.0.0-rc.4",
+    "zod": "4.6.5"
+  },
+  "peerDependencies": {
+    "@arki/dot": "^0.10.0",
+    "@arki/http": "^0.4.1",
+    "@arki/icons": "^0.2.0",
+    "@arki/ui": "^0.2.0",
+    "@electric-sql/pglite": "^0.4.6",
+    "@libsql/client": "^0.18.0",
+    "@orpc/server": "^1.15.5",
+    "@playwright/test": "^1.64.0",
+    "@tanstack/react-router": "^1.170.45",
+    "@tanstack/react-start": "^1.169.3",
+    "drizzle-kit": "^1.0.0-rc.4",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "vitest": "^5.0.3"
+  },
+  "peerDependenciesMeta": {
+    "@arki/dot": {
+      "optional": true
+    },
+    "@arki/http": {
+      "optional": true
+    },
+    "@arki/icons": {
+      "optional": true
+    },
+    "@arki/ui": {
+      "optional": true
+    },
+    "@electric-sql/pglite": {
+      "optional": true
+    },
+    "@libsql/client": {
+      "optional": true
+    },
+    "@orpc/server": {
+      "optional": true
+    },
+    "@playwright/test": {
+      "optional": true
+    },
+    "@tanstack/react-router": {
+      "optional": true
+    },
+    "@tanstack/react-start": {
+      "optional": true
+    },
+    "drizzle-kit": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "vitest": {
+      "optional": true
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "arki": {
+    "runtimes": [
+      "node",
+      "bun",
+      "deno",
+      "browser"
+    ],
+    "bundlerOnly": [
+      "./react",
+      "./react/templates"
+    ]
+  }
+}

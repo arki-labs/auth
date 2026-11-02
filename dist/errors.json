@@ -1,0 +1,182 @@
+[
+  {
+    "code": "ARKI_AUTH_E001",
+    "package": "@arki/auth",
+    "kind": "thrown",
+    "what": "Unknown method, missing provider credentials, unknown `user.fields` name, bad duration.",
+    "fix": "Fix the definition or the `runtime()` bindings named in the message.",
+    "verify": "bun run test -- src/pg/assemble.test.ts",
+    "source": "src/errors.ts:13"
+  },
+  {
+    "code": "ARKI_AUTH_E002",
+    "package": "@arki/auth",
+    "kind": "thrown",
+    "what": "The secret is missing or shorter than `AUTH_SECRET_MIN_LENGTH` in production.",
+    "fix": "Set `AUTH_SECRET` to a random string of at least 32 characters.",
+    "verify": "bun run test -- src/testing/production-boot.test.ts",
+    "source": "src/errors.ts:20"
+  },
+  {
+    "code": "ARKI_AUTH_E003",
+    "package": "@arki/auth",
+    "kind": "thrown",
+    "what": "A method sends mail and no mailer was given.",
+    "fix": "Add the `mail(...)` plugin before the auth plugin, or drop the methods that send mail.",
+    "verify": "bun run test -- src/pg/mail.test.ts",
+    "source": "src/errors.ts:27"
+  },
+  {
+    "code": "ARKI_AUTH_E004",
+    "package": "@arki/auth",
+    "kind": "thrown",
+    "what": "The engine's user lacks a column the definition exposes.",
+    "fix": "Add the column to the user table, or remove its name from `user.fields`.",
+    "verify": "bun run test -- src/principal.test.ts",
+    "source": "src/errors.ts:34"
+  },
+  {
+    "code": "ARKI_AUTH_E005",
+    "package": "@arki/auth",
+    "kind": "thrown",
+    "what": "A testing helper was called while `production` is true.",
+    "fix": "Call testing helpers only from tests, never with `production: true`.",
+    "verify": "bun run test -- src/testing/index.test.ts",
+    "source": "src/errors.ts:41"
+  },
+  {
+    "code": "ARKI_AUTH_E006",
+    "package": "@arki/auth",
+    "kind": "thrown",
+    "what": "The mailer failed to send an auth mail.",
+    "fix": "Check the mail transport and its keys, then ask for the mail again.",
+    "verify": "bun run test -- src/pg/mail.test.ts",
+    "source": "src/errors.ts:48"
+  },
+  {
+    "code": "ARKI_AUTH_E007",
+    "package": "@arki/auth",
+    "kind": "thrown",
+    "what": "A feature is on without its tables (`workspaces`).",
+    "fix": "Add the workspace tables and the two session columns, then rebuild the auth.",
+    "verify": "bun run test -- src/pg/assemble.test.ts",
+    "source": "src/errors.ts:55"
+  },
+  {
+    "code": "ARKI_AUTH_E008",
+    "package": "@arki/auth",
+    "kind": "thrown",
+    "what": "A procedure checks a policy its contract meta does not declare (`.meta({ policy })`). A bug.",
+    "fix": "Declare the policy in the procedure's contract meta with `.meta({ policy })`.",
+    "verify": "bun run test -- src/orpc-policies.test.ts",
+    "source": "src/errors.ts:62"
+  },
+  {
+    "code": "ARKI_AUTH_E009",
+    "package": "@arki/auth",
+    "kind": "thrown",
+    "what": "Production with no `runtime().clientIp`. Every method creates accounts (password and magic-link sign-up, a first social sign-in) or mails an address the caller picks (password reset, magic link), and those requests would have no client address to count on.",
+    "fix": "Set `runtime().clientIp` to `{ header: '<the header your proxy writes>' }`, or `{ from: 'socket' }` without a proxy.",
+    "verify": "bun run test -- src/pg/security/rate-limit.test.ts",
+    "source": "src/errors.ts:71"
+  },
+  {
+    "code": "ARKI_AUTH_E010",
+    "package": "@arki/auth",
+    "kind": "thrown",
+    "what": "`clientIp: { from: 'socket' }` in production, and the request carries no socket address (`request.ip`), or an id-token sign-in came without `clientAddress`. The request is refused: without an address its rate limit would be shared by every caller.",
+    "fix": "Serve through a runtime that sets `request.ip` (srvx: TanStack Start, Nitro, h3), or use `clientIp: { header }` behind a proxy. Pass `clientAddress` to `signInWithIdToken`.",
+    "verify": "bun run test -- src/pg/security/rate-limit.test.ts",
+    "source": "src/errors.ts:80"
+  },
+  {
+    "code": "ARKI_AUTH_E401",
+    "package": "@arki/auth",
+    "kind": "thrown",
+    "what": "No principal, or a cookie and a bearer token on one request.",
+    "fix": "Sign in, and send either the cookie or the bearer token, not both.",
+    "verify": "bun run test -- src/steps.test.ts",
+    "source": "src/errors.ts:87"
+  },
+  {
+    "code": "ARKI_AUTH_E403",
+    "package": "@arki/auth",
+    "kind": "thrown",
+    "what": "A `role()` or `verified` check refused the principal.",
+    "fix": "Verify the email, or give the user the required role.",
+    "verify": "bun run test -- src/steps.test.ts",
+    "source": "src/errors.ts:94"
+  },
+  {
+    "code": "ARKI_AUTH_E429",
+    "package": "@arki/auth",
+    "kind": "thrown",
+    "what": "The rate limiter refused the request.",
+    "fix": "Wait for the `Retry-After` seconds, then try again.",
+    "verify": "bun run test -- src/pg/sessions.test.ts",
+    "source": "src/errors.ts:101"
+  },
+  {
+    "code": "ARKI_AUTH_E503",
+    "package": "@arki/auth",
+    "kind": "thrown",
+    "what": "The rate-limit store failed, so the request is refused rather than let through.",
+    "fix": "Bring the rate-limit store (Redis through `@arki/kv`) back up. Do not turn the limiter off.",
+    "verify": "bun run test -- src/pg/sessions.test.ts",
+    "source": "src/errors.ts:108"
+  },
+  {
+    "code": "auth.forbidden",
+    "package": "@arki/auth",
+    "kind": "failure",
+    "what": "A signed-in caller lacks the required permission or verified email.",
+    "fix": "Verify the email or use an account with the required permission.",
+    "verify": "bun run test -- src/steps.test.ts",
+    "source": "src/boundary-failures.ts:24"
+  },
+  {
+    "code": "auth.not_found",
+    "package": "@arki/auth",
+    "kind": "failure",
+    "what": "Missing and hidden subjects have exactly the same public refusal.",
+    "fix": "Check the resource identifier and account access.",
+    "verify": "bun run test -- src/http-policies.test.ts",
+    "source": "src/boundary-failures.ts:34"
+  },
+  {
+    "code": "auth.rate_limited",
+    "package": "@arki/auth",
+    "kind": "failure",
+    "what": "The caller must wait before another authentication attempt.",
+    "fix": "Wait the retryAfter seconds before trying again.",
+    "verify": "bun run test -- src/http.test.ts",
+    "source": "src/boundary-failures.ts:44"
+  },
+  {
+    "code": "auth.sign_in_refused",
+    "package": "@arki/auth",
+    "kind": "failure",
+    "what": "A sign-in was refused: wrong credentials, an unverified email, or too many attempts. The reason is the only detail; the server's own text never reaches the form.",
+    "fix": "Show the reason to the person signing in: check the credentials, verify the email, or wait.",
+    "verify": "bun run test -- src/react/sign-in-form.test.tsx",
+    "source": "src/boundary-failures.ts:69"
+  },
+  {
+    "code": "auth.unauthenticated",
+    "package": "@arki/auth",
+    "kind": "failure",
+    "what": "No valid session, expired credentials, or conflicting credentials.",
+    "fix": "Sign in and send one credential per request.",
+    "verify": "bun run test -- src/http.test.ts",
+    "source": "src/boundary-failures.ts:14"
+  },
+  {
+    "code": "auth.unavailable",
+    "package": "@arki/auth",
+    "kind": "failure",
+    "what": "The authentication store cannot safely serve this request.",
+    "fix": "Restore the authentication store and retry.",
+    "verify": "bun run test -- src/pg/security/rate-limit.test.ts",
+    "source": "src/boundary-failures.ts:55"
+  }
+]

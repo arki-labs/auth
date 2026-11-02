@@ -1,0 +1,1 @@
+{"version":3,"file":"telemetry.d.ts","sourceRoot":"","sources":["../../src/pg/telemetry.ts"],"names":[],"mappings":"AAMA,uFAAuF;AACvF,wBAAgB,aAAa,CAAC,MAAM,EAAE,MAAM,EAAE,MAAM,MAAM,GAAG,MAAM,GAAG,SAAS,CAW9E;AAED,yFAAyF;AACzF,wBAAsB,WAAW,CAAC,CAAC,EAAE,IAAI,EAAE,MAAM,EAAE,GAAG,EAAE,MAAM,CAAC,GAAG,OAAO,CAAC,CAAC,CAAC,GAAG,OAAO,CAAC,CAAC,CAAC,CAsBxF"}
