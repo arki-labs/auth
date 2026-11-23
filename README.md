@@ -1,4 +1,4 @@
-Read-only mirror of `@arki/auth` v0.4.0. Source and issues: arki-labs/arki. Docs: https://arki.dev/packages/auth. Published 2026-11-02 with provenance https://www.npmjs.com/package/@arki/auth/v/0.4.0#provenance.
+Read-only mirror of `@arki/auth` v0.5.0. Source and issues: arki-labs/arki. Docs: https://arki.dev/packages/auth. Published 2026-11-23 with provenance https://www.npmjs.com/package/@arki/auth/v/0.5.0#provenance.
 
 # @arki/auth
 
@@ -49,6 +49,16 @@ ID generators return their inferred ID or `IdGenerationFailure` from `@arki/cont
 Every other entry is Node and Bun.
 
 `./react` and `./react/templates` are the exception. They load only inside a bundler, because they render `@arki/ui` source. `package.json` lists them in `arki.bundlerOnly`, so the release smoke checks them with a Vite build, not a plain Node import.
+
+<!-- runtimes:start -->
+| Runtime | Result | Version tested | Date (UTC) |
+| --- | --- | --- | --- |
+| node | pass | v22.13.1 | 2026-11-05 |
+| bun | pass | 1.4.2 | 2026-11-05 |
+| deno | pass | 2.9.8 | 2026-11-05 |
+| browser | pass | Chromium 156.0.8078.4 | 2026-11-05 |
+| hermes | n/a | - | 2026-11-05 |
+<!-- runtimes:end -->
 
 ## Recipes
 
@@ -393,11 +403,12 @@ Limits on SQLite:
 | `@arki/auth/tanstack-start`                  | Node, Bun, browser                   | `tanstackStart`, `createRequireAuth`, `ArkiAuthProvider`, `TanStackAuthProvider`; type `SignInRedirect`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `@arki/auth/testing`                         | Node, Bun                            | `testAuth`, `actingAs`, `lastLink`, `lastMagicLink`, `TEST_AUTH_SECRET`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `@arki/auth/testing/tanstack-start`          | Node, Bun                            | `createE2EHandler`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `@arki/auth/testing/production-boot`         | Node                                 | `assertAuthBoots`, `emailModuleMock`, `applyProductionBootEnv`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `@arki/auth/testing/production-boot`         | Node                                 | `assertAuthBoots`, `applyProductionBootEnv`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `@arki/auth/testing/integration-tester`      | Node, Bun                            | `IntegrationTester`, `initTester` and their types (real Postgres and Redis, role callers, rollback)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `@arki/auth/testing/playwright`              | Node                                 | Playwright global setup and fixtures                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | `@arki/auth/env`, `@arki/auth/tweaks-column` | Node, Bun                            | unchanged helpers                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
-Optional peers: `@arki/dot` for `./dot`, `@orpc/server` for `./orpc`, `@arki/http` for `./http`, React, `@arki/ui`, `@arki/icons` and TanStack for the UI entries, `@electric-sql/pglite` (or `@libsql/client` for `database: 'libsql'`), `drizzle-kit` and `vitest` for the testing entries, `@playwright/test` for `./testing/playwright`.
+Optional peers: `@arki/dot` for `./dot`, `@orpc/server` for `./orpc`, `@arki/http` for `./http`, React, `@arki/ui`, `@arki/icons` and TanStack for the UI entries, `@electric-sql/pglite` (or `@libsql/client` for `database: 'libsql'`), `drizzle-kit` and `vitest` for the testing entries, `@playwright/test` for `./testing/playwright`, `@arki/testing`, `testcontainers` and `@testcontainers/postgresql` for `./testing/integration-tester`.
 
 ## Failure behaviour
 
@@ -452,6 +463,23 @@ if (!isAuthError(refusal) || refusal.status !== 403) throw new Error('E403 must 
 - **Session tokens are stored as they are**, as the engine does. The cookie is signed, and lists never return the token.
 - **Not in this version:** email one-time codes, multi-factor, API keys, passkeys, idle and absolute session timeouts, per-account rate budgets, breached-password checks, and auth mail through the outbox. None of them is exported in any form.
 
+## Observability
+
+Spans (OpenTelemetry API only; nothing is exported until the app configures an SDK). Both runtimes (`@arki/auth/pg` and `@arki/auth/sqlite`) make them:
+
+| Span | When | Attributes |
+| --- | --- | --- |
+| `auth.handler` | each request to `auth.handler(request)` | `http.response.status_code`; `failure.code` when it throws |
+| `auth.principal` | each session read, `auth.principal(headers)` | `failure.code` when it throws |
+| `auth.sign_in_with_id_token` | each native sign-in, `auth.signInWithIdToken(input)` | `failure.code` when it throws |
+| `auth.observer.<event>` | each call of an app observer: `userCreated`, `signIn`, `signInFailed`, `passwordChanged`, `signOut`, `sessionCreated` | `failure.code` when the observer throws |
+
+The status is error for a 5xx response or a throw. Credentials, cookies, emails, user ids and event payloads are never attributes. A reporter fault cannot change or repeat authentication. Each span is a child of the active span, so under Dot it nests under the unit or usecase that called auth (`src/dot-telemetry.test.ts`). Observer code can start its own spans under the observer's span.
+
+Metrics: none.
+
+Not instrumented: the engine's SQL, the limiter's `@arki/kv` calls and the mail send — the database driver, `@arki/kv` and `@arki/mail` own those boundaries.
+
 ## Documentation
 
 - [Reference](./docs/reference.md): the declaration, bindings, principal, policies, native sign-in, events, brands, endpoint contract, moving tables, password hashing, workspaces and testing.
@@ -459,11 +487,10 @@ if (!isAuthError(refusal) || refusal.status !== 403) throw new Error('E403 must 
 - [Agent guide](./docs/agent-guide.md): the short version, for agents.
 - [Security review](./docs/security-review.md): the engine read line by line, check by check.
 - [Migration guide](./docs/migration.md): old names to new, and the steps for each app.
+- [Integration tester](./docs/integration-tester.md): `initTester` and `IntegrationTester` on a real Postgres and Redis, role callers, rollback, seeding.
 
 ## Support
 
 Report bugs at [github.com/arki-labs/arki/issues](https://github.com/arki-labs/arki/issues). Report a security problem privately to the maintainers, not in a public issue.
 
 Auth event correlation IDs use the `AuthRequestId` domain type exported by `@arki/auth/ids`. Restore inbound IDs with `authRequestIdSchema` from `@arki/auth/zod`. Existing inbound `x-request-id` values keep their bytes. When secure correlation ID generation fails, auth logs the exact canonical failure and omits the correlated `signIn`/`signInFailed` event; the HTTP response or native sign-in result remains unchanged. Other observers still run. Observers are best effort, not a durable audit delivery mechanism.
-
-The Postgres runtime emits OpenTelemetry spans for `auth.handler`, `auth.principal`, `auth.sign_in_with_id_token` and event observers. Configure the SDK/exporter in the app. Observer code can use the active OTel context for custom spans. Default attributes contain HTTP status and failure code only; credentials and event payloads are excluded. Reporter faults cannot change or repeat authentication.

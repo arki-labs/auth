@@ -136,13 +136,13 @@ declare const workspaceFactories: {
                 };
             };
             organization: {
-                checkRolePermission: <R extends ({
+                checkRolePermission: <R extends {
                     teams: {
                         enabled: true;
                     };
                 } extends {
                     roles: any;
-                } ? string | number | symbol : "admin" | "member" | "owner")>(data: {
+                } ? string | number | symbol : "admin" | "member" | "owner">(data: {
                     permissions: {
                         readonly organization?: ("delete" | "update")[] | undefined;
                         readonly member?: ("create" | "delete" | "update")[] | undefined;
@@ -259,6 +259,7 @@ declare const workspaceFactories: {
             EMAIL_VERIFICATION_REQUIRED_BEFORE_ACCEPTING_OR_REJECTING_INVITATION: import("better-auth").RawError<"EMAIL_VERIFICATION_REQUIRED_BEFORE_ACCEPTING_OR_REJECTING_INVITATION">;
             EMAIL_VERIFICATION_REQUIRED_FOR_INVITATION: import("better-auth").RawError<"EMAIL_VERIFICATION_REQUIRED_FOR_INVITATION">;
             YOU_ARE_NOT_ALLOWED_TO_CANCEL_THIS_INVITATION: import("better-auth").RawError<"YOU_ARE_NOT_ALLOWED_TO_CANCEL_THIS_INVITATION">;
+            YOU_ARE_NOT_ALLOWED_TO_LIST_INVITATIONS: import("better-auth").RawError<"YOU_ARE_NOT_ALLOWED_TO_LIST_INVITATIONS">;
             INVITER_IS_NO_LONGER_A_MEMBER_OF_THE_ORGANIZATION: import("better-auth").RawError<"INVITER_IS_NO_LONGER_A_MEMBER_OF_THE_ORGANIZATION">;
             YOU_ARE_NOT_ALLOWED_TO_INVITE_USER_WITH_THIS_ROLE: import("better-auth").RawError<"YOU_ARE_NOT_ALLOWED_TO_INVITE_USER_WITH_THIS_ROLE">;
             FAILED_TO_RETRIEVE_INVITATION: import("better-auth").RawError<"FAILED_TO_RETRIEVE_INVITATION">;
@@ -393,13 +394,13 @@ declare const workspaceFactories: {
                 };
             };
             organization: {
-                checkRolePermission: <R extends ({
+                checkRolePermission: <R extends {
                     teams: {
                         enabled: false;
                     };
                 } extends {
                     roles: any;
-                } ? string | number | symbol : "admin" | "member" | "owner")>(data: {
+                } ? string | number | symbol : "admin" | "member" | "owner">(data: {
                     permissions: {
                         readonly organization?: ("delete" | "update")[] | undefined;
                         readonly member?: ("create" | "delete" | "update")[] | undefined;
@@ -514,6 +515,7 @@ declare const workspaceFactories: {
             EMAIL_VERIFICATION_REQUIRED_BEFORE_ACCEPTING_OR_REJECTING_INVITATION: import("better-auth").RawError<"EMAIL_VERIFICATION_REQUIRED_BEFORE_ACCEPTING_OR_REJECTING_INVITATION">;
             EMAIL_VERIFICATION_REQUIRED_FOR_INVITATION: import("better-auth").RawError<"EMAIL_VERIFICATION_REQUIRED_FOR_INVITATION">;
             YOU_ARE_NOT_ALLOWED_TO_CANCEL_THIS_INVITATION: import("better-auth").RawError<"YOU_ARE_NOT_ALLOWED_TO_CANCEL_THIS_INVITATION">;
+            YOU_ARE_NOT_ALLOWED_TO_LIST_INVITATIONS: import("better-auth").RawError<"YOU_ARE_NOT_ALLOWED_TO_LIST_INVITATIONS">;
             INVITER_IS_NO_LONGER_A_MEMBER_OF_THE_ORGANIZATION: import("better-auth").RawError<"INVITER_IS_NO_LONGER_A_MEMBER_OF_THE_ORGANIZATION">;
             YOU_ARE_NOT_ALLOWED_TO_INVITE_USER_WITH_THIS_ROLE: import("better-auth").RawError<"YOU_ARE_NOT_ALLOWED_TO_INVITE_USER_WITH_THIS_ROLE">;
             FAILED_TO_RETRIEVE_INVITATION: import("better-auth").RawError<"FAILED_TO_RETRIEVE_INVITATION">;

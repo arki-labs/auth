@@ -37,4 +37,10 @@ export type ClientKeyInput = {
  * there ({@link socketAddressOf}).
  */
 export declare function withClientKey(request: Request, { path, userIdOf }: ClientKeyInput): Promise<Request>;
+/**
+ * `path` without its trailing slashes, in one pass. `path.replace(/\/+$/, '')` restarts its scan at
+ * every slash of a long run that does not end the path, which is quadratic on a request path a
+ * caller chooses.
+ */
+export declare function withoutTrailingSlashes(path: string): string;
 //# sourceMappingURL=client-key.d.ts.map

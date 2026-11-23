@@ -1,4 +1,3 @@
-import type * as MailModule from '@arki/mail';
 import type { AuthDefinition } from '../definition.js';
 import type { AuthEngine } from '../pg/engine.js';
 /**
@@ -24,19 +23,6 @@ import type { AuthEngine } from '../pg/engine.js';
  * env restore cannot mutate the already-built instance.
  */
 export declare function applyProductionBootEnv(): () => void;
-/**
- * The `@arki/mail` module mock: the real module, except that every `mailer()`
- * sends through a `mailSink()` — nothing leaves the process. Consumers wire it
- * through vitest's hoisted `vi.mock`, delegating here to keep the body DRY:
- *
- * ```ts
- * vi.mock('@arki/mail', async () => {
- *   const { emailModuleMock } = await import('@arki/auth/testing/production-boot');
- *   return emailModuleMock();
- * });
- * ```
- */
-export declare function emailModuleMock(): Promise<typeof MailModule>;
 /** What `assertAuthBoots` reads: the definition and the engine it was built into. */
 export type BootableAuth = {
     readonly definition: AuthDefinition;
