@@ -1,5 +1,5 @@
 import { z } from '@arki/contracts';
-import { accountId, authRequestId, organizationId, sessionId, teamId, userId, verificationId, } from './id-declarations.js';
+import { accountId, authRequestId, organizationId, passkeyId, sessionId, teamId, userId, verificationId, } from './id-declarations.js';
 /** A schema that takes a string and gives the declaration's id type, or fails with the prefix it wanted. */
 function idSchema(declaration) {
     return z.string().transform((value, context) => {
@@ -15,6 +15,7 @@ export const userIdSchema = idSchema(userId);
 export const sessionIdSchema = idSchema(sessionId);
 export const accountIdSchema = idSchema(accountId);
 export const verificationIdSchema = idSchema(verificationId);
+export const passkeyIdSchema = idSchema(passkeyId);
 export const organizationIdSchema = idSchema(organizationId);
 export const teamIdSchema = idSchema(teamId);
 /** An email address. */

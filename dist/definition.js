@@ -18,8 +18,11 @@ export const SOCIAL_METHODS = ['google', 'apple', 'facebook', 'microsoft', 'gith
  * its platform SDK returned (`auth.signInWithIdToken`). GitHub has no id tokens.
  */
 export const ID_TOKEN_METHODS = ['google', 'apple', 'facebook', 'microsoft'];
-/** Every sign-in method. Email OTP and passkeys are later work and are not accepted yet. */
-export const AUTH_METHODS = ['password', 'magicLink', ...SOCIAL_METHODS];
+/**
+ * Every sign-in method. `passkey` signs an existing user in with the device's own unlock (face,
+ * fingerprint, PIN); a user adds a passkey while signed in. Email OTP is later work.
+ */
+export const AUTH_METHODS = ['password', 'magicLink', 'passkey', ...SOCIAL_METHODS];
 const DAY = 24 * 60 * 60;
 /** User columns the engine owns. A definition cannot expose them again as extra fields. */
 const CORE_USER_FIELDS = new Set(['id', 'name', 'email', 'emailVerified', 'image', 'createdAt', 'updatedAt']);
@@ -44,7 +47,7 @@ function duplicateOf(values) {
  * The factory calls it again, so a hand-written object gets the same checks.
  */
 export function resolveDefinition(definition) {
-    const { app, methods, user, sessions, magicLink, workspaces, account } = definition;
+    const { app, methods, user, sessions, magicLink, passkey, workspaces, account } = definition;
     if (app.name.trim() === '')
         invalid('`app.name` is empty.');
     if (!/^[a-z0-9][a-z0-9-]*$/.test(app.key)) {
@@ -77,8 +80,20 @@ export function resolveDefinition(definition) {
     assertSeconds(refreshEvery, '`sessions.refreshEvery`');
     if (refreshEvery >= expiresIn)
         invalid('`sessions.refreshEvery` must be shorter than `sessions.expiresIn`.');
+    const freshFor = sessions?.freshFor;
+    if (freshFor !== undefined) {
+        assertSeconds(freshFor, '`sessions.freshFor`');
+        if (freshFor > expiresIn)
+            invalid('`sessions.freshFor` cannot be longer than `sessions.expiresIn`.');
+    }
     if (magicLink !== undefined && !methods.includes('magicLink')) {
         invalid('`magicLink` options are set but the `magicLink` method is not enabled.');
+    }
+    if (passkey !== undefined && !methods.includes('passkey')) {
+        invalid('`passkey` options are set but the `passkey` method is not enabled.');
+    }
+    if (methods.includes('passkey') && (passkey === undefined || passkey.rpName.trim() === '')) {
+        invalid('The `passkey` method needs `passkey: { rpName }`: the name the device shows when it saves the passkey.');
     }
     return {
         app,
@@ -86,8 +101,9 @@ export function resolveDefinition(definition) {
         fields,
         signUpFields,
         verifyEmail: definition.verifyEmail ?? 'require',
-        sessions: { expiresIn, refreshEvery, bearer: sessions?.bearer ?? false },
+        sessions: { expiresIn, refreshEvery, bearer: sessions?.bearer ?? false, freshFor },
         magicLink: { signUp: magicLink?.signUp ?? true },
+        passkey,
         workspaces,
         account: {
             changeEmail: account?.changeEmail ?? false,

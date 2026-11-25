@@ -141,7 +141,7 @@
     "what": "Missing and hidden subjects have exactly the same public refusal.",
     "fix": "Check the resource identifier and account access.",
     "verify": "bun run test -- src/http-policies.test.ts",
-    "source": "src/boundary-failures.ts:34"
+    "source": "src/boundary-failures.ts:46"
   },
   {
     "code": "auth.rate_limited",
@@ -150,7 +150,16 @@
     "what": "The caller must wait before another authentication attempt.",
     "fix": "Wait the retryAfter seconds before trying again.",
     "verify": "bun run test -- src/http.test.ts",
-    "source": "src/boundary-failures.ts:44"
+    "source": "src/boundary-failures.ts:56"
+  },
+  {
+    "code": "auth.session_not_fresh",
+    "package": "@arki/auth",
+    "kind": "failure",
+    "what": "The caller is signed in, but the session is older than `sessions.freshFor`. `freshFor` is that window in seconds, so the client can say how long a fresh sign-in lasts.",
+    "fix": "Sign in again (password, magic link or social) on the same device, then retry within `freshFor` seconds.",
+    "verify": "bun run test -- src/pg/flows/fresh-session.test.ts",
+    "source": "src/boundary-failures.ts:35"
   },
   {
     "code": "auth.sign_in_refused",
@@ -159,7 +168,7 @@
     "what": "A sign-in was refused: wrong credentials, an unverified email, or too many attempts. The reason is the only detail; the server's own text never reaches the form.",
     "fix": "Show the reason to the person signing in: check the credentials, verify the email, or wait.",
     "verify": "bun run test -- src/react/sign-in-form.test.tsx",
-    "source": "src/boundary-failures.ts:69"
+    "source": "src/boundary-failures.ts:81"
   },
   {
     "code": "auth.unauthenticated",
@@ -177,6 +186,6 @@
     "what": "The authentication store cannot safely serve this request.",
     "fix": "Restore the authentication store and retry.",
     "verify": "bun run test -- src/pg/security/rate-limit.test.ts",
-    "source": "src/boundary-failures.ts:55"
+    "source": "src/boundary-failures.ts:67"
   }
 ]

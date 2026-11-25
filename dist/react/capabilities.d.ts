@@ -10,6 +10,8 @@ export type AuthCapabilities<D extends AuthDefinition = AuthDefinition> = {
     readonly social: readonly SocialMethodsOf<D>[];
     readonly password: boolean;
     readonly magicLink: boolean;
+    /** `authClient.signIn.passkey()` and the `authClient.passkey` API are there. */
+    readonly passkey: boolean;
     readonly workspaces: boolean;
 };
 /** Reads the capabilities of a definition. */

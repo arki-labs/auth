@@ -12,8 +12,8 @@ export { AUTH_ERROR_CODES, AuthError, isAuthError } from './errors.js';
 export type { AuthErrorCode } from './errors.js';
 export { AUTH_SECRET_MIN_LENGTH, PASSWORD_MIN_LENGTH } from './constants.js';
 export type { UserId } from '@arki/contracts';
-export { AUTH_FAILURES, AUTH_PRINCIPAL_FAILURES, AUTH_POLICY_FAILURES, isAuthBoundaryFailure, AuthenticationRequired, AccessDenied, ResourceMissing, AuthenticationRateLimited, AuthenticationUnavailable, SIGN_IN_FAILURE_REASONS, SignInRefused, resolvePrincipal, requirePrincipal, checkPrincipal, } from './boundary-failures.js';
+export { AUTH_FAILURES, AUTH_PRINCIPAL_FAILURES, AUTH_POLICY_FAILURES, isAuthBoundaryFailure, AuthenticationRequired, AccessDenied, ResourceMissing, AuthenticationRateLimited, AuthenticationUnavailable, SessionNotFresh, SIGN_IN_FAILURE_REASONS, SignInRefused, resolvePrincipal, requirePrincipal, checkPrincipal, } from './boundary-failures.js';
 export type { PrincipalSource, PrincipalChecks } from './boundary-failures.js';
 export { authorizePolicy } from './policies.js';
-export { authed, role, verified } from './steps.js';
+export { authed, freshSession, role, verified } from './steps.js';
 //# sourceMappingURL=index.d.ts.map

@@ -7,6 +7,7 @@ export function authCapabilities(definition) {
         social: methods.filter((method) => isSocialMethod(method)),
         password: methods.includes('password'),
         magicLink: methods.includes('magicLink'),
+        passkey: methods.includes('passkey'),
         workspaces: definition.workspaces !== undefined,
     };
 }

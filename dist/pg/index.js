@@ -13,5 +13,5 @@
  * const principal = await auth.principal(request.headers);
  */
 export * from '../runtime.js';
-export { accountIdColumns, authIdSources, sessionIdColumns, userIdColumns, verificationIdColumns } from './ids.js';
+export { accountIdColumns, authIdSources, passkeyIdColumns, sessionIdColumns, userIdColumns, verificationIdColumns, } from './ids.js';
 //# sourceMappingURL=index.js.map

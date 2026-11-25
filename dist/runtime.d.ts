@@ -12,6 +12,8 @@ export { assertAuthSecret } from './pg/secret.js';
 export { additionalFieldsFromColumns } from './pg/fields.js';
 export { authLinkInput } from './pg/mail.js';
 export { authAccountColumns, authSessionColumns, authUserColumns, authVerificationColumns, createAuthTables, } from './schema/auth-tables.js';
+export { createPasskeyTables } from './schema/passkey-table.js';
+export type { CreatePasskeyTablesOptions } from './schema/passkey-table.js';
 export type { AuthColumnFill, AuthColumnNaming, AuthColumnOptions, CreateAuthTablesOptions, ExtraColumns, PrimaryColumnSource, UserIdSource, } from './schema/auth-tables.js';
 /**
  * Builds the auth from its definition and the app's bindings. Every mistake a deployment can make

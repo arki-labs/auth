@@ -82,6 +82,27 @@ export declare const verificationIdColumns: {
         }) => import("drizzle-orm").$Type<import("@arki/db/sqlite").SQLiteTextBuilder<[string, ...string[]]>, `verif_${string}`>;
     };
 };
+export declare const passkeyIdColumns: {
+    primaryColumn: (name?: string) => import("drizzle-orm").HasRuntimeDefault<import("drizzle-orm").HasDefault<import("drizzle-orm").$Type<import("drizzle-orm").IsPrimaryKey<import("drizzle-orm").NotNull<import("@arki/db/sqlite").SQLiteTextBuilder<[string, ...string[]]>>>, `pkey_${string}`>>>;
+    optionalColumn: (name: string) => import("drizzle-orm").HasRuntimeDefault<import("drizzle-orm").HasDefault<import("drizzle-orm").$Type<import("@arki/db/sqlite").SQLiteTextBuilder<[string, ...string[]]>, `pkey_${string}` | null>>>;
+    requiredColumn: (name: string) => import("drizzle-orm").HasRuntimeDefault<import("drizzle-orm").HasDefault<import("drizzle-orm").$Type<import("drizzle-orm").NotNull<import("@arki/db/sqlite").SQLiteTextBuilder<[string, ...string[]]>>, `pkey_${string}`>>>;
+    reference: (name: string) => import("drizzle-orm").$Type<import("drizzle-orm").NotNull<import("@arki/db/sqlite").SQLiteTextBuilder<[string, ...string[]]>>, `pkey_${string}`>;
+    optionalReference: (name: string) => import("drizzle-orm").$Type<import("@arki/db/sqlite").SQLiteTextBuilder<[string, ...string[]]>, `pkey_${string}`>;
+    foreignKey: (name: string, referenceFn: () => import("@arki/db/sqlite").SQLiteColumn, options?: {
+        onDelete?: import("@arki/db/sqlite").OnDelete;
+    }) => import("drizzle-orm").$Type<import("drizzle-orm").NotNull<import("@arki/db/sqlite").SQLiteTextBuilder<[string, ...string[]]>>, `pkey_${string}`>;
+    optionalForeignKey: (name: string, referenceFn: () => import("@arki/db/sqlite").SQLiteColumn, options?: {
+        onDelete?: import("@arki/db/sqlite").OnDelete;
+    }) => import("drizzle-orm").$Type<import("@arki/db/sqlite").SQLiteTextBuilder<[string, ...string[]]>, `pkey_${string}`>;
+    createForeignKeyFactory: (referenceFn: () => import("@arki/db/sqlite").SQLiteColumn) => {
+        required: (name: string, options?: {
+            onDelete?: import("@arki/db/sqlite").OnDelete;
+        }) => import("drizzle-orm").$Type<import("drizzle-orm").NotNull<import("@arki/db/sqlite").SQLiteTextBuilder<[string, ...string[]]>>, `pkey_${string}`>;
+        optional: (name: string, options?: {
+            onDelete?: import("@arki/db/sqlite").OnDelete;
+        }) => import("drizzle-orm").$Type<import("@arki/db/sqlite").SQLiteTextBuilder<[string, ...string[]]>, `pkey_${string}`>;
+    };
+};
 /**
  * The auth id kinds as `createAuthTables` takes them, and foreign keys to the user from
  * `userForeignKeys` as plain SQLite columns for the app's own tables.
@@ -284,6 +305,67 @@ export declare const authIdSources: {
                 onDelete?: import("@arki/db/sqlite").OnDelete;
             }) => import("@arki/db/columns").ColumnSpec<"sqlite", "id", Omit<import("@arki/db/columns").NoFlags, "type"> & {
                 type: `verif_${string}`;
+            }>;
+        };
+    };
+    /** For `createPasskeyTables`; `createAuthTables` does not read it. */
+    passkey: {
+        primaryColumn: (name?: string) => import("@arki/db/columns").ColumnSpec<"sqlite", "id", Omit<import("@arki/db/columns").NoFlags & {
+            notNull: true;
+        } & {
+            primaryKey: true;
+        }, "type"> & {
+            type: `pkey_${string}`;
+        } & {
+            default: true;
+            defaultFn: true;
+        }>;
+        optionalColumn: (name: string) => import("@arki/db/columns").ColumnSpec<"sqlite", "id", Omit<import("@arki/db/columns").NoFlags, "type"> & {
+            type: `pkey_${string}` | null;
+        } & {
+            default: true;
+            defaultFn: true;
+        }>;
+        requiredColumn: (name: string) => import("@arki/db/columns").ColumnSpec<"sqlite", "id", Omit<import("@arki/db/columns").NoFlags & {
+            notNull: true;
+        }, "type"> & {
+            type: `pkey_${string}`;
+        } & {
+            default: true;
+            defaultFn: true;
+        }>;
+        reference: (name: string) => import("@arki/db/columns").ColumnSpec<"sqlite", "id", Omit<import("@arki/db/columns").NoFlags & {
+            notNull: true;
+        }, "type"> & {
+            type: `pkey_${string}`;
+        }>;
+        optionalReference: (name: string) => import("@arki/db/columns").ColumnSpec<"sqlite", "id", Omit<import("@arki/db/columns").NoFlags, "type"> & {
+            type: `pkey_${string}`;
+        }>;
+        foreignKey: (name: string, ref: () => import("drizzle-orm").Column, options?: {
+            onDelete?: import("@arki/db/sqlite").OnDelete;
+        }) => import("@arki/db/columns").ColumnSpec<"sqlite", "id", Omit<import("@arki/db/columns").NoFlags & {
+            notNull: true;
+        }, "type"> & {
+            type: `pkey_${string}`;
+        }>;
+        optionalForeignKey: (name: string, ref: () => import("drizzle-orm").Column, options?: {
+            onDelete?: import("@arki/db/sqlite").OnDelete;
+        }) => import("@arki/db/columns").ColumnSpec<"sqlite", "id", Omit<import("@arki/db/columns").NoFlags, "type"> & {
+            type: `pkey_${string}`;
+        }>;
+        createForeignKeyFactory: (ref: () => import("drizzle-orm").Column) => {
+            required: (name: string, options?: {
+                onDelete?: import("@arki/db/sqlite").OnDelete;
+            }) => import("@arki/db/columns").ColumnSpec<"sqlite", "id", Omit<import("@arki/db/columns").NoFlags & {
+                notNull: true;
+            }, "type"> & {
+                type: `pkey_${string}`;
+            }>;
+            optional: (name: string, options?: {
+                onDelete?: import("@arki/db/sqlite").OnDelete;
+            }) => import("@arki/db/columns").ColumnSpec<"sqlite", "id", Omit<import("@arki/db/columns").NoFlags, "type"> & {
+                type: `pkey_${string}`;
             }>;
         };
     };

@@ -1,4 +1,8 @@
-const toSnakeCase = key => key.replaceAll(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+// A run of capitals is one word: `credentialID` → `credential_id`, not `credential_i_d`.
+const toSnakeCase = key => key
+    .replaceAll(/([a-z0-9])([A-Z])/g, '$1_$2')
+    .replaceAll(/([A-Z]+)([A-Z][a-z])/g, '$1_$2')
+    .toLowerCase();
 const keepKey = key => key;
 export function columnNamer(naming = 'snake') {
     return naming === 'camel' ? keepKey : toSnakeCase;

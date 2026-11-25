@@ -1,3 +1,4 @@
+import { passkeyClient } from '@better-auth/passkey/client';
 import { magicLinkClient, organizationClient } from 'better-auth/client/plugins';
 import { createAuthClient as createEngineClient } from 'better-auth/react';
 import { resolveDefinition } from '../definition.js';
@@ -5,6 +6,7 @@ import { authCapabilities } from './capabilities.js';
 const METHOD_CLIENT_PLUGINS = {
     password: () => [],
     magicLink: () => [magicLinkClient()],
+    passkey: () => [passkeyClient()],
     google: () => [],
     apple: () => [],
     facebook: () => [],

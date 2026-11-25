@@ -28,6 +28,8 @@ function signInMethodOfPath(path) {
         return 'password';
     if (path === '/magic-link/verify')
         return 'magicLink';
+    if (path === '/passkey/verify-authentication')
+        return 'passkey';
     const provider = /^\/callback\/([^/]+)$/.exec(path)?.[1];
     return provider !== undefined && isSocialMethod(provider) ? provider : undefined;
 }

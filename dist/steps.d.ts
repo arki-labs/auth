@@ -29,4 +29,17 @@ export declare function role(name: string): <P extends AnyPrincipal>(ctx: {
 }) => import("@arki/failure").Failure<"auth.forbidden", undefined> | import("@arki/failure").Failure<"auth.unauthenticated", undefined> | {
     principal: P;
 };
+/**
+ * Signed in less than `sessions.freshFor` seconds ago: a guest is `auth.unauthenticated` (401), an
+ * older session `auth.session_not_fresh` (403, with `freshFor`). A fresh sign-in on the same device
+ * replaces the old session, so the caller passes on the next try. A principal from an auth without
+ * `sessions.freshFor` throws `ARKI_AUTH_E001`: that is a setup bug, not a refusal.
+ */
+export declare function freshSession<P extends AnyPrincipal>(ctx: {
+    readonly principal: P | null;
+}): import("@arki/failure").Failure<"auth.session_not_fresh", {
+    freshFor: number;
+}> | import("@arki/failure").Failure<"auth.unauthenticated", undefined> | {
+    principal: P;
+};
 //# sourceMappingURL=steps.d.ts.map

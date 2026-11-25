@@ -7,8 +7,11 @@ export type SocialMethod = (typeof SOCIAL_METHODS)[number];
  */
 export declare const ID_TOKEN_METHODS: readonly ["google", "apple", "facebook", "microsoft"];
 export type IdTokenMethod = (typeof ID_TOKEN_METHODS)[number];
-/** Every sign-in method. Email OTP and passkeys are later work and are not accepted yet. */
-export declare const AUTH_METHODS: readonly ["password", "magicLink", "google", "apple", "facebook", "microsoft", "github"];
+/**
+ * Every sign-in method. `passkey` signs an existing user in with the device's own unlock (face,
+ * fingerprint, PIN); a user adds a passkey while signed in. Email OTP is later work.
+ */
+export declare const AUTH_METHODS: readonly ["password", "magicLink", "passkey", "google", "apple", "facebook", "microsoft", "github"];
 export type AuthMethod = (typeof AUTH_METHODS)[number];
 /** A duration in whole seconds. */
 export type Seconds = number;
@@ -20,6 +23,13 @@ export type Seconds = number;
  * - `'none'`: no link is sent.
  */
 export type VerifyEmailMode = 'none' | 'send' | 'require';
+/**
+ * Passkey options. `rpName` is the name the device shows when it asks to save the passkey. The
+ * relying party id and the expected origin come from the auth's `runtime.url`.
+ */
+export type PasskeyOptions = {
+    readonly rpName: string;
+};
 /** Organizations (workspaces). `teams: true` adds teams inside each workspace. */
 export type WorkspacesOption = {
     readonly teams: boolean;
@@ -59,16 +69,26 @@ export type AuthDefinition<M extends readonly AuthMethod[] = readonly AuthMethod
     };
     /** Default `'require'`. */
     readonly verifyEmail?: VerifyEmailMode;
-    /** Defaults: 7 days, refreshed at most once a day, no bearer tokens. */
+    /**
+     * Defaults: 7 days, refreshed at most once a day, no bearer tokens, no `freshFor`.
+     *
+     * `freshFor`: how many seconds after sign-in a session counts as fresh. The `freshSession` step
+     * refuses an older session, and so do the engine's own sensitive routes (delete the account,
+     * unlink an account, list sessions). Unset, those routes accept a session up to one day old and
+     * `freshSession` throws `ARKI_AUTH_E001`.
+     */
     readonly sessions?: {
         readonly expiresIn?: Seconds;
         readonly refreshEvery?: Seconds;
         readonly bearer?: boolean;
+        readonly freshFor?: Seconds;
     };
     /** `signUp: false` makes magic links sign-in only. Default `true`. */
     readonly magicLink?: {
         readonly signUp?: boolean;
     };
+    /** Required when `methods` lists `passkey`, refused otherwise. */
+    readonly passkey?: PasskeyOptions;
     /** Organizations (workspaces), optionally with teams. Needs the workspace tables. */
     readonly workspaces?: W;
     /** Account self-service: change email, link accounts, delete the account. All off by default. */
@@ -102,10 +122,12 @@ export type ResolvedDefinition = {
         readonly expiresIn: Seconds;
         readonly refreshEvery: Seconds;
         readonly bearer: boolean;
+        readonly freshFor: Seconds | undefined;
     };
     readonly magicLink: {
         readonly signUp: boolean;
     };
+    readonly passkey: PasskeyOptions | undefined;
     readonly workspaces: WorkspacesOption | undefined;
     readonly account: {
         readonly changeEmail: boolean;
@@ -122,9 +144,16 @@ export declare const isIdTokenMethod: (value: string) => value is IdTokenMethod;
  */
 export declare function resolveDefinition(definition: AuthDefinition): ResolvedDefinition;
 /**
+ * `passkey` options are required when `methods` is a written list that names `passkey`. A list
+ * typed only as an array (built at run time) is checked when the definition is resolved instead.
+ */
+export type PasskeyOptionsFor<M extends readonly AuthMethod[]> = number extends M['length'] ? unknown : 'passkey' extends M[number] ? {
+    readonly passkey: PasskeyOptions;
+} : unknown;
+/**
  * Declares the app's auth. Returns the definition unchanged after checking it; the point is the
  * literal types: `methods` and `user.fields` keep their exact names for the server, the client and
  * the principal, and `workspaces` stays as written for the client.
  */
-export declare function defineAuth<const M extends readonly AuthMethod[], const F extends readonly string[] = readonly [], const W extends WorkspacesOption | undefined = undefined>(definition: AuthDefinition<M, F, W>): AuthDefinition<M, F, W>;
+export declare function defineAuth<const M extends readonly AuthMethod[], const F extends readonly string[] = readonly [], const W extends WorkspacesOption | undefined = undefined>(definition: AuthDefinition<M, F, W> & PasskeyOptionsFor<M>): AuthDefinition<M, F, W>;
 //# sourceMappingURL=definition.d.ts.map

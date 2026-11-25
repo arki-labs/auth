@@ -5,7 +5,7 @@
  *
  * This module is pure: types and one narrowing function, no engine and no database code.
  */
-import type { ExposedFields } from './definition.js';
+import type { ExposedFields, Seconds } from './definition.js';
 /** The user columns the engine owns, as the principal sees them. */
 export declare const CORE_USER_KEYS: readonly ['id', 'name', 'email', 'emailVerified', 'image', 'createdAt', 'updatedAt'];
 export type CoreUserKey = (typeof CORE_USER_KEYS)[number];
@@ -50,6 +50,8 @@ export type Principal<U, SId extends string = string> = {
     readonly session: PrincipalSession<SId>;
     readonly via: PrincipalVia;
     readonly roles: readonly string[];
+    /** `sessions.freshFor` of the auth that built this principal. Absent when the definition sets none. */
+    readonly freshFor?: Seconds;
     /** The selected workspace. A selection, not proof of membership: check membership where it matters. */
     readonly workspace?: {
         readonly activeOrganizationId: string | null;
@@ -90,6 +92,8 @@ export type ToPrincipalInput = {
     readonly via: PrincipalVia;
     /** Read `activeOrganizationId` / `activeTeamId` from the session. */
     readonly workspaces: boolean;
+    /** The definition's `sessions.freshFor`, copied onto the principal for `freshSession`. */
+    readonly freshFor: Seconds | undefined;
 };
 /**
  * Builds the principal from the engine's session. Keeps only the core and the exposed columns, so

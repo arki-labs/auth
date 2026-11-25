@@ -12,6 +12,17 @@ export declare const AuthenticationRequired: import("@arki/failure").FailureDefi
  */
 export declare const AccessDenied: import("@arki/failure").FailureDefinition<"auth.forbidden", undefined>;
 /**
+ * The caller is signed in, but the session is older than `sessions.freshFor`. `freshFor` is that
+ * window in seconds, so the client can say how long a fresh sign-in lasts.
+ * @fix Sign in again (password, magic link or social) on the same device, then retry within `freshFor` seconds.
+ * @verify bun run test -- src/pg/flows/fresh-session.test.ts
+ */
+export declare const SessionNotFresh: import("@arki/failure").FailureDefinition<"auth.session_not_fresh", import("better-auth").StandardSchemaV1<{
+    freshFor: number;
+}, {
+    freshFor: number;
+}>>;
+/**
  * Missing and hidden subjects have exactly the same public refusal.
  * @fix Check the resource identifier and account access.
  * @verify bun run test -- src/http-policies.test.ts
@@ -51,7 +62,11 @@ export declare const AUTH_FAILURES: readonly [import("@arki/failure").FailureDef
     retryAfter?: number | undefined;
 }, {
     retryAfter?: number | undefined;
-}>>, import("@arki/failure").FailureDefinition<"auth.unavailable", undefined>, import("@arki/failure").FailureDefinition<"failure.unexpected_defect", undefined>];
+}>>, import("@arki/failure").FailureDefinition<"auth.unavailable", undefined>, import("@arki/failure").FailureDefinition<"auth.session_not_fresh", import("better-auth").StandardSchemaV1<{
+    freshFor: number;
+}, {
+    freshFor: number;
+}>>, import("@arki/failure").FailureDefinition<"failure.unexpected_defect", undefined>];
 /** The principal reader only; no second authentication engine. */
 export type PrincipalSource<P extends AnyPrincipal> = {
     readonly principal: (headers: Headers) => Promise<P | null>;

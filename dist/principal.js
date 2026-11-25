@@ -68,13 +68,14 @@ export function toUserRow(engineUser, fields) {
  * never turned into a guest.
  */
 export async function toPrincipal(input, roles) {
-    const { session, fields, via, workspaces } = input;
+    const { session, fields, via, workspaces, freshFor } = input;
     const user = toUserRow(input.user, fields);
     return {
         user,
         session: toPrincipalSession(session),
         via,
         roles: await roles(user),
+        ...(freshFor !== undefined && { freshFor }),
         ...(workspaces && {
             workspace: {
                 activeOrganizationId: optionalText(Reflect.get(session, 'activeOrganizationId')),

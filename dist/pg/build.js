@@ -95,16 +95,23 @@ function assertWorkspaceTables(tables, teams) {
         throw new AuthError(AUTH_ERROR_CODES.tableMissing, `[@arki/auth] \`workspaces\` is on but \`tables\` lacks ${missing.join(', ')}. Add \`createWorkspaceTables(...)\`.`);
     }
 }
+function assertPasskeyTable(tables) {
+    if (tables.Passkey !== undefined)
+        return;
+    throw new AuthError(AUTH_ERROR_CODES.tableMissing, '[@arki/auth] `passkey` is on but `tables` lacks Passkey. Add `createPasskeyTables(...)`.');
+}
 /**
  * The engine's own id generation is off (`generateId: false`): every id comes from the table's
  * default. A table whose `id` has none would insert a null id at the first sign-up.
  */
-function assertIdDefaults(tables, workspaces) {
+function assertIdDefaults(tables, resolved) {
+    const { workspaces } = resolved;
     const checked = [
         ['User', tables.User],
         ['Session', tables.Session],
         ['Account', tables.Account],
         ['Verification', tables.Verification],
+        ...(resolved.passkey === undefined ? [] : [['Passkey', tables.Passkey]]),
         ...(workspaces === undefined
             ? []
             : [
@@ -204,7 +211,9 @@ export function buildAuth(definition, bindings) {
     const tables = bindings.tables;
     if (resolved.workspaces !== undefined)
         assertWorkspaceTables(tables, resolved.workspaces.teams);
-    assertIdDefaults(tables, resolved.workspaces);
+    if (resolved.passkey !== undefined)
+        assertPasskeyTable(tables);
+    assertIdDefaults(tables, resolved);
     const sendsMail = resolved.methods.includes('password') || resolved.methods.includes('magicLink') || resolved.account.changeEmail;
     if (sendsMail && bindings.mail === undefined) {
         throw new AuthError(AUTH_ERROR_CODES.mailRequired, '[@arki/auth] `password`, `magicLink` and `account.changeEmail` send mail: bind `mail` (the Dot `mail` service).');
@@ -345,10 +354,30 @@ export function buildAuth(definition, bindings) {
         if (found === null)
             return null;
         const via = bearerToken !== undefined && resolved.sessions.bearer ? 'bearer' : 'cookie';
-        return toPrincipal({ user: found.user, session: found.session, fields: resolved.fields, via, workspaces }, roles);
+        return toPrincipal({
+            user: found.user,
+            session: found.session,
+            fields: resolved.fields,
+            via,
+            workspaces,
+            freshFor: resolved.sessions.freshFor,
+        }, roles);
     }
     /** The principal of a request whose credentials may be wrong; events never fail the request. */
     const principalOrNull = (headers) => principal(headers).catch(() => null);
+    const sessions = createSessions(engineContext);
+    /**
+     * A sign-in by the user already signed in on this request replaces that session, so a re-check
+     * (`freshSession`) leaves one session. Another user's sign-in keeps the old session.
+     */
+    async function replaceSession(previous, signedIn) {
+        if (previous === null || previous.user.id !== signedIn.user.id)
+            return;
+        if (previous.session.id === signedIn.session.id)
+            return;
+        await sessions.revoke(previous, previous.session.id);
+        log.debug('A sign-in replaced the session it was made from');
+    }
     const noSocketAddress = () => {
         log.error('Auth "{app}" refused a request with no socket address (request.ip): clientIp is set to the socket.', {
             app: resolved.app.name,
@@ -370,6 +399,7 @@ export function buildAuth(definition, bindings) {
             return new Response(null, { status: 404 });
         const method = signInMethodOf(path, resolved.methods);
         const before = path === '/sign-out' || path === '/change-password' ? await principalOrNull(request.headers) : null;
+        const signedInBefore = method === undefined ? null : await principalOrNull(request.headers);
         let response;
         try {
             response = await engine.handler(request);
@@ -394,8 +424,10 @@ export function buildAuth(definition, bindings) {
                 if (reason !== undefined && !isFailure(requestId))
                     await emit.signInFailed({ method, reason, requestId });
             }
-            else if (!isFailure(requestId)) {
-                await emit.signIn({ principal: signedIn, method, requestId });
+            else {
+                await replaceSession(signedInBefore, signedIn);
+                if (!isFailure(requestId))
+                    await emit.signIn({ principal: signedIn, method, requestId });
             }
         }
         if (before !== null && response.ok) {
@@ -420,6 +452,7 @@ export function buildAuth(definition, bindings) {
         if (socketRequired && clientAddress === undefined)
             throw noSocketAddress();
         const requestId = requestIdOf(headers);
+        const signedInBefore = await principalOrNull(headers);
         const refused = async (reason) => {
             if (!isFailure(requestId))
                 await emit.signInFailed({ method: provider, reason, requestId });
@@ -460,6 +493,7 @@ export function buildAuth(definition, bindings) {
         if (token === null || signedIn === null) {
             throw new Error('[@arki/auth] The engine accepted the id token but returned no usable bearer token.');
         }
+        await replaceSession(signedInBefore, signedIn);
         if (!isFailure(requestId))
             await emit.signIn({ principal: signedIn, method: provider, requestId });
         log.debug('Signed in with a {provider} id token', { provider: name });
@@ -521,7 +555,7 @@ export function buildAuth(definition, bindings) {
         definition,
         handler: request => observeAuth('auth.handler', () => handler(request)),
         principal: headers => observeAuth('auth.principal', () => principal(headers)),
-        sessions: createSessions(engineContext),
+        sessions,
         supportsIdToken,
         signInWithIdToken: input => observeAuth('auth.sign_in_with_id_token', () => signInWithIdToken(input)),
         engine,

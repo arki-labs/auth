@@ -8,14 +8,17 @@
  */
 import type { BetterAuthClientPlugin } from 'better-auth/client';
 import type { ReactAuthClient } from 'better-auth/react';
+import { passkeyClient } from '@better-auth/passkey/client';
 import { magicLinkClient } from 'better-auth/client/plugins';
 import type { AuthDefinition, WorkspacesOption } from '../definition.js';
 import type { AuthCapabilities } from './capabilities.js';
 type MagicLinkClientPlugin = ReturnType<typeof magicLinkClient>;
+type PasskeyClientPlugin = ReturnType<typeof passkeyClient>;
 /** The client plugins each method needs. Typed per method, so the client's API follows `methods`. */
 type MethodClientPlugins = {
     readonly password: readonly [];
     readonly magicLink: readonly [MagicLinkClientPlugin];
+    readonly passkey: readonly [PasskeyClientPlugin];
     readonly google: readonly [];
     readonly apple: readonly [];
     readonly facebook: readonly [];

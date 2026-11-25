@@ -82,6 +82,27 @@ export declare const verificationIdColumns: {
         }) => import("@arki/db/pg").Set$Type<import("@arki/db/pg").PgVarcharBuilder<[string, ...string[]]>, `verif_${string}`>;
     };
 };
+export declare const passkeyIdColumns: {
+    primaryColumn: (name?: string) => import("@arki/db/pg").SetHasRuntimeDefault<import("@arki/db/pg").Set$Type<import("@arki/db/pg").SetIsPrimaryKey<import("@arki/db/pg").SetNotNull<import("@arki/db/pg").PgVarcharBuilder<[string, ...string[]]>>>, `pkey_${string}`>>;
+    optionalColumn: (name: string) => import("@arki/db/pg").SetHasRuntimeDefault<import("@arki/db/pg").Set$Type<import("@arki/db/pg").PgVarcharBuilder<[string, ...string[]]>, `pkey_${string}` | null>>;
+    requiredColumn: (name: string) => import("@arki/db/pg").SetHasRuntimeDefault<import("@arki/db/pg").Set$Type<import("@arki/db/pg").SetNotNull<import("@arki/db/pg").PgVarcharBuilder<[string, ...string[]]>>, `pkey_${string}`>>;
+    reference: (name: string) => import("@arki/db/pg").Set$Type<import("@arki/db/pg").SetNotNull<import("@arki/db/pg").PgVarcharBuilder<[string, ...string[]]>>, `pkey_${string}`>;
+    optionalReference: (name: string) => import("@arki/db/pg").Set$Type<import("@arki/db/pg").PgVarcharBuilder<[string, ...string[]]>, `pkey_${string}`>;
+    foreignKey: (name: string, referenceFn: () => import("@arki/db/pg").PgColumn, options?: {
+        onDelete?: import("@arki/db/id").OnDelete;
+    }) => import("@arki/db/pg").Set$Type<import("@arki/db/pg").SetNotNull<import("@arki/db/pg").PgVarcharBuilder<[string, ...string[]]>>, `pkey_${string}`>;
+    optionalForeignKey: (name: string, referenceFn: () => import("@arki/db/pg").PgColumn, options?: {
+        onDelete?: import("@arki/db/id").OnDelete;
+    }) => import("@arki/db/pg").Set$Type<import("@arki/db/pg").PgVarcharBuilder<[string, ...string[]]>, `pkey_${string}`>;
+    createForeignKeyFactory: (referenceFn: () => import("@arki/db/pg").PgColumn) => {
+        required: (name: string, options?: {
+            onDelete?: import("@arki/db/id").OnDelete;
+        }) => import("@arki/db/pg").Set$Type<import("@arki/db/pg").SetNotNull<import("@arki/db/pg").PgVarcharBuilder<[string, ...string[]]>>, `pkey_${string}`>;
+        optional: (name: string, options?: {
+            onDelete?: import("@arki/db/id").OnDelete;
+        }) => import("@arki/db/pg").Set$Type<import("@arki/db/pg").PgVarcharBuilder<[string, ...string[]]>, `pkey_${string}`>;
+    };
+};
 /**
  * The auth id kinds as `createAuthTables` takes them: `varchar(256)` primary keys, and foreign keys
  * to the user from `userForeignKeys` as plain Postgres columns for the app's own tables.
@@ -284,6 +305,67 @@ export declare const authIdSources: {
                 onDelete?: import("@arki/db/id").OnDelete;
             }) => import("@arki/db/columns").ColumnSpec<"pg", "id", Omit<import("@arki/db/columns").NoFlags, "type"> & {
                 type: `verif_${string}`;
+            }>;
+        };
+    };
+    /** For `createPasskeyTables`; `createAuthTables` does not read it. */
+    passkey: {
+        primaryColumn: (name?: string) => import("@arki/db/columns").ColumnSpec<"pg", "id", Omit<import("@arki/db/columns").NoFlags & {
+            notNull: true;
+        } & {
+            primaryKey: true;
+        }, "type"> & {
+            type: `pkey_${string}`;
+        } & {
+            default: true;
+            defaultFn: true;
+        }>;
+        optionalColumn: (name: string) => import("@arki/db/columns").ColumnSpec<"pg", "id", Omit<import("@arki/db/columns").NoFlags, "type"> & {
+            type: `pkey_${string}` | null;
+        } & {
+            default: true;
+            defaultFn: true;
+        }>;
+        requiredColumn: (name: string) => import("@arki/db/columns").ColumnSpec<"pg", "id", Omit<import("@arki/db/columns").NoFlags & {
+            notNull: true;
+        }, "type"> & {
+            type: `pkey_${string}`;
+        } & {
+            default: true;
+            defaultFn: true;
+        }>;
+        reference: (name: string) => import("@arki/db/columns").ColumnSpec<"pg", "id", Omit<import("@arki/db/columns").NoFlags & {
+            notNull: true;
+        }, "type"> & {
+            type: `pkey_${string}`;
+        }>;
+        optionalReference: (name: string) => import("@arki/db/columns").ColumnSpec<"pg", "id", Omit<import("@arki/db/columns").NoFlags, "type"> & {
+            type: `pkey_${string}`;
+        }>;
+        foreignKey: (name: string, ref: () => import("drizzle-orm/column").Column, options?: {
+            onDelete?: import("@arki/db/id").OnDelete;
+        }) => import("@arki/db/columns").ColumnSpec<"pg", "id", Omit<import("@arki/db/columns").NoFlags & {
+            notNull: true;
+        }, "type"> & {
+            type: `pkey_${string}`;
+        }>;
+        optionalForeignKey: (name: string, ref: () => import("drizzle-orm/column").Column, options?: {
+            onDelete?: import("@arki/db/id").OnDelete;
+        }) => import("@arki/db/columns").ColumnSpec<"pg", "id", Omit<import("@arki/db/columns").NoFlags, "type"> & {
+            type: `pkey_${string}`;
+        }>;
+        createForeignKeyFactory: (ref: () => import("drizzle-orm/column").Column) => {
+            required: (name: string, options?: {
+                onDelete?: import("@arki/db/id").OnDelete;
+            }) => import("@arki/db/columns").ColumnSpec<"pg", "id", Omit<import("@arki/db/columns").NoFlags & {
+                notNull: true;
+            }, "type"> & {
+                type: `pkey_${string}`;
+            }>;
+            optional: (name: string, options?: {
+                onDelete?: import("@arki/db/id").OnDelete;
+            }) => import("@arki/db/columns").ColumnSpec<"pg", "id", Omit<import("@arki/db/columns").NoFlags, "type"> & {
+                type: `pkey_${string}`;
             }>;
         };
     };
